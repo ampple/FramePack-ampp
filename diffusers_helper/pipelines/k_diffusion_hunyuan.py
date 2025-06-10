@@ -37,6 +37,7 @@ def sample_hunyuan(
         real_guidance_scale=1.0,
         distilled_guidance_scale=6.0,
         guidance_rescale=0.0,
+        flux_shift=None,
         shift=None,
         num_inference_steps=25,
         batch_size=None,
@@ -67,6 +68,9 @@ def sample_hunyuan(
         mu = calculate_flux_mu(seq_length, exp_max=7.0)
     else:
         mu = math.log(shift)
+
+    if flux_shift is not None:
+        mu = mu + math.log(flux_shift)
 
     sigmas = get_flux_sigmas_from_mu(num_inference_steps, mu).to(device)
 

@@ -87,6 +87,8 @@ On the right are the generated videos and latent previews.
 
 Because this is a next-frame-section prediction model, videos will be generated longer and longer.
 
+The **Flux Shift** slider in the UI allows adjusting the sigma schedule. A value of `1.0` keeps the default behaviour, while higher or lower values modify the denoising tempo.
+
 You will see the progress bar for each section and the latent preview for the next section.
 
 Note that the initial progress may be slower than later diffusion as the device may need some warmup.
