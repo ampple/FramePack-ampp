@@ -28,6 +28,7 @@ def get_flux_sigmas_from_mu(n, mu):
 def sample_hunyuan(
         transformer,
         sampler='unipc',
+        variant='bh1',
         initial_latent=None,
         concat_latent=None,
         strength=1.0,
@@ -113,7 +114,15 @@ def sample_hunyuan(
     )
 
     if sampler == 'unipc':
-        results = sample_unipc(k_model, latents, sigmas, extra_args=sampler_kwargs, disable=False, callback=callback)
+        results = sample_unipc(
+            k_model,
+            latents,
+            sigmas,
+            extra_args=sampler_kwargs,
+            disable=False,
+            callback=callback,
+            variant=variant,
+        )
     else:
         raise NotImplementedError(f'Sampler {sampler} is not supported.')
 

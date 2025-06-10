@@ -100,7 +100,7 @@ os.makedirs(outputs_folder, exist_ok=True)
 
 
 @torch.no_grad()
-def worker(input_image, prompt, n_prompt, seed, total_second_length, latent_window_size, steps, cfg, gs, rs, gpu_memory_preservation, use_teacache, mp4_crf):
+def worker(input_image, prompt, n_prompt, seed, total_second_length, latent_window_size, steps, cfg, gs, rs, gpu_memory_preservation, use_teacache, mp4_crf, variant):
     total_latent_sections = (total_second_length * 30) / (latent_window_size * 4)
     total_latent_sections = int(max(round(total_latent_sections), 1))
 
@@ -254,6 +254,7 @@ def worker(input_image, prompt, n_prompt, seed, total_second_length, latent_wind
                 clean_latent_2x_indices=clean_latent_2x_indices,
                 clean_latents_4x=clean_latents_4x,
                 clean_latent_4x_indices=clean_latent_4x_indices,
+                variant=variant,
                 callback=callback,
             )
 
@@ -297,7 +298,22 @@ def worker(input_image, prompt, n_prompt, seed, total_second_length, latent_wind
     return
 
 
-def process(input_image, prompt, n_prompt, seed, total_second_length, latent_window_size, steps, cfg, gs, rs, gpu_memory_preservation, use_teacache, mp4_crf):
+def process(
+    input_image,
+    prompt,
+    n_prompt,
+    seed,
+    total_second_length,
+    latent_window_size,
+    steps,
+    cfg,
+    gs,
+    rs,
+    gpu_memory_preservation,
+    use_teacache,
+    mp4_crf,
+    variant,
+):
     global stream
     assert input_image is not None, 'No input image!'
 
@@ -305,7 +321,23 @@ def process(input_image, prompt, n_prompt, seed, total_second_length, latent_win
 
     stream = AsyncStream()
 
-    async_run(worker, input_image, prompt, n_prompt, seed, total_second_length, latent_window_size, steps, cfg, gs, rs, gpu_memory_preservation, use_teacache, mp4_crf)
+    async_run(
+        worker,
+        input_image,
+        prompt,
+        n_prompt,
+        seed,
+        total_second_length,
+        latent_window_size,
+        steps,
+        cfg,
+        gs,
+        rs,
+        gpu_memory_preservation,
+        use_teacache,
+        mp4_crf,
+        variant,
+    )
 
     output_filename = None
 
@@ -369,6 +401,13 @@ with block:
 
                 mp4_crf = gr.Slider(label="MP4 Compression", minimum=0, maximum=100, value=16, step=1, info="Lower means better quality. 0 is uncompressed. Change to 16 if you get black outputs. ")
 
+                variant = gr.Dropdown(
+                    label="Flow Matching Variant",
+                    choices=["bh1", "bh2"],
+                    value="bh1",
+                    info="bh2 keeps motion better but may deviate from prompts",
+                )
+
         with gr.Column():
             preview_image = gr.Image(label="Next Latents", height=200, visible=False)
             result_video = gr.Video(label="Finished Frames", autoplay=True, show_share_button=False, height=512, loop=True)
@@ -377,7 +416,22 @@ with block:
 
     gr.HTML('<div style="text-align:center; margin-top:20px;">Share your results and find ideas at the <a href="https://x.com/search?q=framepack&f=live" target="_blank">FramePack Twitter (X) thread</a></div>')
 
-    ips = [input_image, prompt, n_prompt, seed, total_second_length, latent_window_size, steps, cfg, gs, rs, gpu_memory_preservation, use_teacache, mp4_crf]
+    ips = [
+        input_image,
+        prompt,
+        n_prompt,
+        seed,
+        total_second_length,
+        latent_window_size,
+        steps,
+        cfg,
+        gs,
+        rs,
+        gpu_memory_preservation,
+        use_teacache,
+        mp4_crf,
+        variant,
+    ]
     start_button.click(fn=process, inputs=ips, outputs=[result_video, preview_image, progress_desc, progress_bar, start_button, end_button])
     end_button.click(fn=end_process)
 

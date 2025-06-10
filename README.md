@@ -77,6 +77,8 @@ For example, to install sage-attention (linux):
 
 However, you are highly recommended to first try without sage-attention since it will influence results, though the influence is minimal.
 
+The UniPC sampler provides two internal variants: `bh1` (default) and `bh2`. `bh2` can maintain motion details slightly better but may drift from the prompt. You can choose the variant in the dropdown of the Gradio scripts.
+
 # GUI
 
 ![ui](https://github.com/user-attachments/assets/8c5cdbb1-b80c-4b7e-ac27-83834ac24cc4)
